@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ai?why?not? - Art Styles Explorer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bangers&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .title-font {
+            font-family: 'Bangers', cursive;
+            text-shadow: 3px 3px 0px rgba(0,0,0,0.1);
+        }
+        .art-tile {
+            transition: all 0.3s ease;
+        }
+        .art-tile:hover {
+            transform: translateY(-5px);
+        }
+        .scroll-container {
+            scrollbar-width: thin;
+            scrollbar-color: #8B5CF6 #E9D5FF;
+        }
+        .scroll-container::-webkit-scrollbar {
+            height: 8px;
+        }
+        .scroll-container::-webkit-scrollbar-track {
+            background: #E9D5FF;
+            border-radius: 10px;
+        }
+        .scroll-container::-webkit-scrollbar-thumb {
+            background-color: #8B5CF6;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-purple-50 to-blue-50 min-h-screen">
+    <div class="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
+        <!-- Title Section -->
+        <div class="flex items-center justify-center" style="height: 60vh;">
+            <h1 class="title-font text-7xl md:text-9xl font-extrabold text-center text-purple-600 mb-12 tracking-wider">AI? WHY? NOT?</h1>
+        </div>
+        
+        <!-- Explore Button -->
+        <div class="flex justify-center mb-12">
+            <button 
+                id="exploreButton" 
+                class="bg-gradient-to-r from-pink-500 to-blue-500 text-white px-8 py-4 rounded-full shadow-lg hover:shadow-xl transform hover:scale-105 transition duration-300 text-xl font-bold"
+            >
+                Explore Art Styles
+            </button>
+        </div>
+        
+        <!-- Art Styles Container -->
+        <div 
+            id="artStylesContainer" 
+            class="hidden scroll-container overflow-x-auto whitespace-nowrap pb-6 -mx-4 px-4"
+        >
+            <!-- Tiles will be inserted here by JavaScript -->
+        </div>
+    </div>
+
+    <script>
+        // Art styles data with Pexels image URLs
+        const artStyles = [
+            {
+                name: "Abstract",
+                image: "https://images.pexels.com/photos/1194420/pexels-photo-1194420.jpeg",
+                description: "Abstract art uses visual language of shape, form, color and line to create compositions independent from visual references in the world."
+            },
+            {
+                name: "Line Art",
+                image: "https://images.pexels.com/photos/11053072/pexels-photo-11053072.jpeg",
+                description: "Line art focuses on clean, distinct lines to create images without shading or color blocks. It emphasizes form and outline."
+            },
+            {
+                name: "Live Drawing",
+                image: "https://images.pexels.com/photos/11053074/pexels-photo-11053074.jpeg",
+                description: "Live drawing captures the creative process in real-time, showing the evolution of an artwork from blank canvas to finished piece."
+            },
+            {
+                name: "Cubism",
+                image: "https://images.pexels.com/photos/753325/pexels-photo-753325.jpeg",
+                description: "Cubism is an early-20th-century art movement that revolutionized European painting and sculpture by emphasizing the flat, two-dimensional surface of the picture plane."
+            },
+            {
+                name: "Expressionism",
+                image: "https://images.pexels.com/photos/1021876/pexels-photo-1021876.jpeg",
+                description: "Expressionism presents the world from a subjective perspective, distorting it radically for emotional effect to evoke moods or ideas."
+            },
+            {
+                name: "Fauvism",
+                image: "https://images.pexels.com/photos/1021877/pexels-photo-1021877.jpeg",
+                description: "Fauvism is characterized by strong colors and fierce brushwork that emphasized painterly qualities over realistic representation."
+            },
+            {
+                name: "Impressionism",
+                image: "https://images.pexels.com/photos/1021878/pexels-photo-1021878.jpeg",
+                description: "Impressionism is characterized by small, thin brush strokes, open composition, emphasis on accurate depiction of light."
+            },
+            {
+                name: "Pointillism",
+                image: "https://images.pexels.com/photos/1021879/pexels-photo-1021879.jpeg",
+                description: "Pointillism is a technique of painting in which small, distinct dots of color are applied in patterns to form an image."
+            },
+            {
+                name: "Pop Art",
+                image: "https://images.pexels.com/photos/1021880/pexels-photo-1021880.jpeg",
+                description: "Pop art employs aspects of mass culture, such as advertising, comic books and mundane cultural objects in its imagery."
+            },
+            {
+                name: "Postimpressionism",
+                image: "https://images.pexels.com/photos/1021881/pexels-photo-1021881.jpeg",
+                description: "Postimpressionism extended Impressionism while rejecting its limitations, emphasizing geometric forms, unnatural color, and painterly brushwork."
+            },
+            {
+                name: "Primitivism",
+                image: "https://images.pexels.com/photos/1021882/pexels-photo-1021882.jpeg",
+                description: "Primitivism is a mode of aesthetic idealization that either emulates or aspires to recreate 'primitive' experience."
+            },
+            {
+                name: "Realism",
+                image: "https://images.pexels.com/photos/1021883/pexels-photo-1021883.jpeg",
+                description: "Realism attempts to represent subject matter truthfully, without artificiality and avoiding artistic conventions."
+            },
+            {
+                name: "Surrealism",
+                image: "https://images.pexels.com/photos/1021884/pexels-photo-1021884.jpeg",
+                description: "Surrealism aims to resolve the previously contradictory conditions of dream and reality into an absolute reality, a super-reality."
+            }
+        ];
+
+        // DOM elements
+        const exploreButton = document.getElementById('exploreButton');
+        const artStylesContainer = document.getElementById('artStylesContainer');
+
+        // Toggle art styles container
+        exploreButton.addEventListener('click', () => {
+            artStylesContainer.classList.toggle('hidden');
+            if (!artStylesContainer.classList.contains('hidden')) {
+                populateArtStyles();
+            }
+        });
+
+        // Populate art styles tiles
+        function populateArtStyles() {
+            artStylesContainer.innerHTML = '';
+            
+            artStyles.forEach(style => {
+                const tile = document.createElement('div');
+                tile.className = 'inline-block px-4 art-tile';
+                tile.innerHTML = `
+                    <div class="w-64 bg-white rounded-xl shadow-md overflow-hidden" style="display: inline-flex; flex-direction: column; vertical-align: top; min-height: 300px;">
+                        <img src="${style.image}" alt="${style.name}" class="w-full h-48 object-cover">
+                        <div class="p-4 flex flex-col" style="min-height: 152px;">
+                            <h3 class="text-xl font-bold text-purple-600 mb-2">${style.name}</h3>
+                            <div class="mt-auto">
+                                <button 
+                                    class="w-full text-left text-gray-700 hover:bg-gray-100 p-2 rounded-lg transition"
+                                    onclick="toggleDescription(this)"
+                                >
+                                    Show Details
+                                </button>
+                                <div class="hidden mt-2 p-3 bg-white border border-purple-200 rounded-lg w-full">
+                                    <p class="text-gray-700 text-sm break-words whitespace-normal leading-relaxed">${style.description}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                artStylesContainer.appendChild(tile);
+            });
+        }
+
+        // Toggle description visibility
+        window.toggleDescription = function(button) {
+            const description = button.nextElementSibling;
+            const isHidden = description.classList.toggle('hidden');
+            button.textContent = isHidden ? 'Show Details' : 'Hide Details';
+        }
+
+        // Infinite scroll functionality
+        let isLoading = false;
+        window.addEventListener('scroll', () => {
+            if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 500 && !isLoading) {
+                isLoading = true;
+                // Simulate loading more data
+                setTimeout(() => {
+                    populateArtStyles();
+                    isLoading = false;
+                }, 1000);
+            }
+        });
+    </script>
+
+    <!-- AI Content Section -->
+    <div class="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
+        <div class="bg-white rounded-xl shadow-md p-8 mb-12" style="font-family: 'Times New Roman', serif;">
+            <p class="text-2xl font-bold text-purple-600 mb-4 italic">AI?</p>
+            <p class="text-lg text-gray-700 mb-6 leading-relaxed">AI stands for Artificial Intelligence, which is a technology that can solve problems like humans. AI can recognize images, write poems, and make predictions.</p>
+            <p class="text-2xl font-bold text-purple-600 mb-4 italic">AI? WHY?</p>
+            <p class="text-lg text-gray-700 mb-6 leading-relaxed">A lot of people have been inclined to use AI to create art since it is usually very quick while also being pretty. However by using AI to create art, we risk losing that human essence that gives art its depth and meaning.</p>
+            <p class="text-2xl font-bold text-purple-600 mb-4 italic">AI? WHY? NOT?</p>
+            <p class="text-lg text-gray-700 leading-relaxed">It might not be the most ethical idea for AI to make art. But who says that we can't use this brilliant piece of technology to learn for ourselves?</p>
+        </div>
+    </div>
+
+    <script>
+        // Enhanced description handling with smooth transitions
+        const openDescriptions = new WeakMap();
+        
+        window.toggleDescription = function(button) {
+            const description = button.nextElementSibling;
+            const isHidden = description.classList.toggle('hidden');
+            button.textContent = isHidden ? 'Show Details' : 'Hide Details';
+            
+            // Track state and handle transitions
+            if (isHidden) {
+                openDescriptions.delete(description);
+                description.style.maxHeight = '0';
+                description.style.opacity = '0';
+                setTimeout(() => {
+                    description.style.display = 'none';
+                }, 300);
+            } else {
+                openDescriptions.set(description, true);
+                description.style.display = 'block';
+                description.style.maxHeight = '0';
+                description.style.opacity = '0';
+                requestAnimationFrame(() => {
+                    description.style.maxHeight = description.scrollHeight + 'px';
+                    description.style.opacity = '1';
+                });
+            }
+        }
+
+        // Smooth scroll handling
+        window.addEventListener('scroll', () => {
+            document.querySelectorAll('.art-tile').forEach(tile => {
+                const description = tile.querySelector('[class*="mt-2"]');
+                if (description && openDescriptions.has(description)) {
+                    if (description.classList.contains('hidden')) {
+                        description.style.display = 'block';
+                        description.style.maxHeight = '0';
+                        description.style.opacity = '0';
+                        description.classList.remove('hidden');
+                        requestAnimationFrame(() => {
+                            description.style.maxHeight = description.scrollHeight + 'px';
+                            description.style.opacity = '1';
+                        });
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
